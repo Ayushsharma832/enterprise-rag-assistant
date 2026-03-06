@@ -10,6 +10,7 @@ from slowapi import Limiter
 from slowapi.util import get_remote_address
 from slowapi.errors import RateLimitExceeded
 from fastapi import Request
+from app.services.retrieval_service import initialize_bm25
 
 limiter = Limiter(key_func=get_remote_address)
 
@@ -56,6 +57,10 @@ async def upload_document(file: UploadFile = File(...), request: Request = None)
 
     # Reload FAISS index after upload
     index, stored_docs = create_or_load_index()
+
+    # Reinitialize BM25 after new documents
+    initialize_bm25(stored_docs)
+
     request.app.state.index = index
     request.app.state.stored_docs = stored_docs
 

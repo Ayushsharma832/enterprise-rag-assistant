@@ -4,7 +4,7 @@ from slowapi import Limiter
 from slowapi.middleware import SlowAPIMiddleware
 from slowapi.util import get_remote_address
 from slowapi.errors import RateLimitExceeded
-
+from app.services.retrieval_service import initialize_bm25
 from app.api.routes import router
 from app.services.embedding_service import create_or_load_index
 
@@ -13,6 +13,9 @@ limiter = Limiter(key_func=get_remote_address)
 
 # ----------------- Load FAISS embeddings/index -----------------
 index, stored_docs = create_or_load_index()
+
+# Initialize BM25
+initialize_bm25(stored_docs)
 
 # ----------------- FastAPI app -----------------
 app = FastAPI(title="Enterprise RAG Assistant")
